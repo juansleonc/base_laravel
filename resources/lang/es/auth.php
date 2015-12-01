@@ -22,7 +22,8 @@ return [
     'register_title' => 'Registro',
     'register_action' => '¡Registrate!',
     'remember' => 'Recuèrdame',
-    'forgot_link' => '¿Olvidaste tu contraseña?'
+    'forgot_link' => '¿Olvidaste tu contraseña?',
+    'throttle' => 'Demasiados intentos fallidos por favor intente de nuevo en :seconds segundos',
 
 
 ];

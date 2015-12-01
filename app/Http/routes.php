@@ -47,3 +47,36 @@ Route::post('password/email', 'Auth\PasswordController@postEmail');
 // Password reset routes...
 Route::get('password/reset/{token}', 'Auth\PasswordController@getReset');
 Route::post('password/reset', 'Auth\PasswordController@postReset');
+
+Route::group(['middleware' => 'auth'], function(){
+    Route::get('account', function(){
+        return view('account');
+    });
+
+    Route::group(['middleware' => 'verified'], function(){
+        Route::get('publish', function(){
+            return view('publish');
+        });
+        Route::post('publish', function(){
+            return Request::all();
+        });
+
+        Route::group(['middleware' => 'role:admin'], function(){
+            Route::get('admin/settings', function(){
+                return view('admin.settings');
+            });
+        });
+
+        Route::group(['middleware' => 'role:editor'], function(){
+            Route::get('admin/posts', function(){
+                return view('admin.posts');
+            });
+        });
+    });
+
+
+
+
+
+});
+

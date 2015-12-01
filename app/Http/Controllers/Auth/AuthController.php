@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\Auth;
 
 use App\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
-use Symfony\Component\HttpFoundation\Request;
+
 use Validator;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
@@ -33,7 +34,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest', ['except' => 'getLogout']);
+        $this->middleware('guest', ['except' => ['getLogout', 'getConfirmation']]);
     }
 
     /**
@@ -67,16 +68,19 @@ class AuthController extends Controller
 
         $user = new User([
             'name' => $data['name'],
+            'username' => $data['username'],
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
         ]);
         $user->role = 'user';
-        $user->registration_token =str_random(40);
+        $user->registration_token = str_random(40);
 
         $user->save();
+
         $url = route('confirmation', ['token' => $user->registration_token]);
+
         Mail::send('emails/registration', compact('user', 'url'), function($m) use ($user){
-            $m->to($user->email, $user->name)->subject('activa tu cuenta');
+            $m->to($user->email, $user->name)->subject('Activa tu cuenta');
         });
         return $user;
 
@@ -103,13 +107,14 @@ class AuthController extends Controller
             'username' => $request->get('username'),
             'password' => $request->get('password'),
             'active' => true,
-            'registration_token' => null
+            /*'registration_token' => null*/
         ];
     }
 
 
     public function postRegister(Request $request)
     {
+        
         $validator = $this->validator($request->all());
 
         if ($validator->fails()) {
@@ -123,14 +128,12 @@ class AuthController extends Controller
         return redirect()->route('login')->with('alert', 'Por favor confirma tu email: ' . $user->email);
     }
 
-    /*
-    protected function getCredentials($request)
+    protected function getConfirmation($token)
     {
-        return [
-            'email' => $request->get('email'),
-            'password' => $request->get('password'),
-
-        ];
+        $user = User::where('registration_token', $token)->firstOrFail();
+        $user->registration_token = null;
+        $user->save();
+        return redirect()->route('home')
+            ->with('alert', '¡Tu email ya fue confirmado!');
     }
-    */
 }
