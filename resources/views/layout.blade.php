@@ -26,6 +26,12 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
                 <li><a href="/">Home</a></li>
+                @if(auth()->check())
+                    <li><a href="{{ url('account') }}">Account</a></li>
+                @endif
+                @if(auth()->check() && AccessHandler::check(auth()->user()->role, 'editor'))
+                    <li><a href="{{ url('publish') }}">Publish</a></li>
+                @endif
             </ul>
 
             <ul class="nav navbar-nav navbar-right">

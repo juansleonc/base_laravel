@@ -49,11 +49,9 @@ Route::get('password/reset/{token}', 'Auth\PasswordController@getReset');
 Route::post('password/reset', 'Auth\PasswordController@postReset');
 
 Route::group(['middleware' => 'auth'], function(){
-    Route::get('account', function(){
-        return view('account');
-    });
 
     Route::group(['middleware' => 'verified'], function(){
+
         Route::get('publish', function(){
             return view('publish');
         });
@@ -72,6 +70,22 @@ Route::group(['middleware' => 'auth'], function(){
                 return view('admin.posts');
             });
         });
+
+        Route::get('account', function(){
+            return view('account.account');
+        });
+
+        Route::get('account/change-password',[
+            'uses' => 'AccountController@getPassword',
+            'as' => 'account/change-password'
+        ]);
+        Route::post('account/change-password','AccountController@postPassword');
+
+        Route::get('account/edit-profile', [
+            'uses' => 'AccountController@editProfile',
+            'as' => 'account/edit-profile'
+        ]);
+        Route::put('account/edit-profile', 'AccountController@updateProfile');
     });
 
 
